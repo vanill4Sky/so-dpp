@@ -42,9 +42,7 @@ void dpp::philosopher::think()
 
 void dpp::philosopher::eat()
 {
-    std::lock(left_fork.mutex, right_fork.mutex);
-    std::lock_guard left_fork_lock(left_fork.mutex, std::adopt_lock);
-    std::lock_guard right_fork_lock(right_fork.mutex, std::adopt_lock);
+    std::scoped_lock forks_lock(left_fork.mutex, right_fork.mutex);
 
     print("start eating.");
 
@@ -56,6 +54,6 @@ void dpp::philosopher::eat()
 
 void dpp::philosopher::print(std::string_view text)
 {
-    std::lock_guard cout_lock(g_lockprint);
+    std::scoped_lock cout_lock(g_lockprint);
     std::cout << name << " " << text << '\n';
 }
