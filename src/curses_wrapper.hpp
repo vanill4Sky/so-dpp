@@ -1,7 +1,8 @@
 #pragma once
 
+#include <ncurses.h>
 #include <string>
-#include <string.h>
+#include <cstring>
 
 #include "utils.hpp"
 
@@ -26,6 +27,8 @@ public:
 
     template<typename T>
 	void print(T text, int pos_x, int pos_y) const;
+
+    void circle(int r) const;
 };
 
 }
@@ -55,10 +58,14 @@ void dpp::curses_wrapper::print_centered(T text) const
 }
 
 template<typename T>
-void dpp::curses_wrapper::print(T text, int pos_x, int pos_y) const
+void dpp::curses_wrapper::print(T text, int row, int col) const
 {
     if constexpr (std::is_same_v<T, std::string>)
-        mvprintw(pos_x, pos_y, text.c_str());
-    else 
-        mvprintw(pos_x, pos_y, text);
+    {
+        mvprintw(row, col, text.c_str());
+    }
+    else
+    { 
+        mvprintw(row, col, text);
+    }
 }

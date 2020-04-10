@@ -6,14 +6,16 @@
 
 std::mutex g_lockprint;
 
-dpp::philosopher::philosopher(std::string name, const dpp::table& table, 
-    dpp::fork& left_fork, dpp::fork& right_fork)
-    : name{ std::move(name) }
+dpp::philosopher::philosopher(size_t id, std::string name, const dpp::table& table, 
+    dpp::fork& left_fork, dpp::fork& right_fork, dpp::visualization& visualization)
+    : id{ id } 
+    , name{ std::move(name) }
     , table{ table }
     , left_fork{ left_fork }
     , right_fork{ right_fork }
     , thread{ &dpp::philosopher::dine, this }
     , rng{ std::random_device{}() }
+    , visualization{ visualization }
     {}
 
 dpp::philosopher::~philosopher()
@@ -34,26 +36,32 @@ void dpp::philosopher::dine()
 
 void dpp::philosopher::think()
 {
-    static thread_local std::uniform_int_distribution dist{1, 10};
-    std::this_thread::sleep_for(std::chrono::milliseconds(dist(rng) * 100));
+    visualization.update_info(id, dpp::philosopher_state::thinking);
 
-    print("is thinking.");
+    static thread_local std::uniform_int_distribution dist{ 1, 20 };
+    const auto sleep_period{ dist(rng) };
+    for (size_t i = 0; i < sleep_period; ++i)
+    {
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        visualization.update_progressbar(id, static_cast<float>(i) / sleep_period);
+    }
+    visualization.update_progressbar(id, 1.0f);
 }
 
 void dpp::philosopher::eat()
 {
-    std::scoped_lock forks_lock(left_fork.mutex, right_fork.mutex);
+    std::scoped_lock forks_lock{ left_fork.mutex, right_fork.mutex };
 
-    print("start eating.");
+    visualization.update_info(id, dpp::philosopher_state::eating);
 
-    static thread_local std::uniform_int_distribution dist{1, 10};
-    std::this_thread::sleep_for(std::chrono::milliseconds(dist(rng) * 50));
+    static thread_local std::uniform_int_distribution dist{ 1, 20 };
+    const auto sleep_period{ dist(rng) };
+    for (size_t i = 0; i < sleep_period; ++i)
+    {
+        std::this_thread::sleep_for(std::chrono::milliseconds(50));
+        visualization.update_progressbar(id, static_cast<float>(i) / sleep_period);
+    }
+    visualization.update_progressbar(id, 1.0f);
 
-    print("finished eating.");
-}
-
-void dpp::philosopher::print(std::string_view text)
-{
-    std::scoped_lock cout_lock(g_lockprint);
-    std::cout << name << " " << text << '\n';
+    visualization.update_info(id, dpp::philosopher_state::finish);
 }
