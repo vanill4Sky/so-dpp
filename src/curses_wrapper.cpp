@@ -1,6 +1,7 @@
 #include "curses_wrapper.hpp"
 
 #include <cmath>
+#include <string>
 
 dpp::curses_wrapper::curses_wrapper()
 {
@@ -8,6 +9,8 @@ dpp::curses_wrapper::curses_wrapper()
     raw();				
     keypad(stdscr, TRUE);
     noecho();
+    start_color();
+    init_colorpairs();
 }
 
 dpp::curses_wrapper::~curses_wrapper()
@@ -27,50 +30,65 @@ utils::vec2<int> dpp::curses_wrapper::get_size() const
     return { stdscr->_maxx, stdscr->_maxy };
 }
 
-void dpp::curses_wrapper::print(const std::string& text) const
+void dpp::curses_wrapper::print(std::string_view text) const
 {
-    printw(text.c_str());
+    printw(text.data());
 }
 
-void dpp::curses_wrapper::print(std::string text, utils::vec2<int> pos) const
+void dpp::curses_wrapper::print(std::string_view text, utils::vec2<int> pos) const
 {
-    mvprintw(pos.x, pos.y, text.c_str());
+    mvprintw(pos.y, pos.x, text.data());
 }
 
-void dpp::curses_wrapper::circle(int r) const 
+void dpp::curses_wrapper::print(std::string_view text, int row, int col) const
 {
-    auto win_size = get_size();
-    utils::vec2<int> s{ win_size.x / 2, win_size.y / 2 };
-    const auto pow2 = [](int a) { return a * a; };
-    const auto pr = 2.0f;
+    mvprintw(row, col, text.data());
+}
 
-    for (int row = s.y - r; row <= s.y + r; ++row)
+void dpp::curses_wrapper::init_colorpairs() const 
+{
+    for (int bg{ 0 }; bg <= 7; ++bg)
     {
-        for (int col = s.x - r * pr; col <= s.x + r * pr; ++col) 
+        for (int fg{ 0 }; fg <= 7; ++fg)
         {
-            auto phi = utils::cartesian_to_polar<float>(
-                (col - s.x) / pr, row - s.y);
-
-            auto d = std::pow((col - s.x) / static_cast<float>(r * pr), 2) 
-                + std::pow(((row - s.y) / static_cast<float>(r)), 2);
-            if (d > 0.9f && d < 1.1f)
-            {
-                const int slices_num = 6;
-                for (int i = 0; i < slices_num + 1; ++i)
-                {
-                    float slice = (2 * M_PI) / slices_num;
-                    if (phi >= slice * i && phi <= slice * (i + 1))
-                    {
-                        std::string sym{ "a" };
-                        sym[0] += i;
-                        print(sym, row, col);
-                        break;
-                    }
-                }                
-            }
+            auto id = color_pair_id(fg, bg);
+            init_pair(id, fg, bg);
         }
     }
-    update();
+}
+
+unsigned int dpp::curses_wrapper::color_pair_id(unsigned int fg, unsigned int bg) const
+{
+    fg &= 7;
+    bg &= 7;
+
+    return (bg << 3) | fg;
+}
+
+void dpp::curses_wrapper::set_color(unsigned int fg, unsigned int bg) const
+{
+    attron(COLOR_PAIR(color_pair_id(fg, bg)));
+}
+
+void dpp::curses_wrapper::unset_color(unsigned int fg, unsigned int bg) const
+{
+    attroff(COLOR_PAIR(color_pair_id(fg, bg)));
+}
+
+dpp::scoped_color dpp::curses_wrapper::set_scoped_color(unsigned int fg, unsigned int bg) const
+{
+    return {*this, fg, bg};
+}
+
+dpp::scoped_color::scoped_color(const dpp::curses_wrapper& window, unsigned int fg, unsigned int bg) 
+    : window{window}, fg{fg}, bg{bg}
+{ 
+    window.set_color(fg, bg);
+}
+
+dpp::scoped_color::~scoped_color()
+{
+    window.unset_color(fg, bg);
 }
 
 // void dpp::curses_wrapper::print(std::string text, int pos_x, int pos_y) const

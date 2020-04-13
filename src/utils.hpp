@@ -1,3 +1,5 @@
+#pragma once
+
 #include <cmath>
 
 namespace utils
@@ -27,6 +29,12 @@ T cartesian_to_polar(int x, int y)
 		phi = 3 * M_PI / 2;
 
 	return phi;
+}
+
+template <typename T>
+T pow2(T x)
+{
+	return x * x;
 }
 
 }

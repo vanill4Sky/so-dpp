@@ -4,6 +4,7 @@
 #include <vector>
 
 #include "curses_wrapper.hpp"
+#include "utils.hpp"
 
 namespace dpp
 {
@@ -41,10 +42,15 @@ public:
 private:
     visualization() {};
 
+    void update_table(const size_t id);
+    void draw_table(const size_t r, const utils::vec2<int> s) const;
+    void draw_slice(size_t id, const size_t r, const utils::vec2<int> s) const;
+    unsigned int choose_foreground_color(dpp::philosopher_state state) const;
+
 private:
     const size_t info_vertical_offset = 2;
     const size_t progressbar_horizontal_offset = 25;
-    const size_t progressbar_length = 10;
+    const size_t progressbar_length = 15;
 
     std::mutex mutex_terminal;
     const curses_wrapper window;
