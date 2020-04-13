@@ -33,6 +33,8 @@ void dine(T philospher_names_list)
 	table.ready = true;
 	std::this_thread::sleep_for(std::chrono::seconds(10));
 	table.ready = false;
+
+	getch();
 }
 
 int main()
@@ -47,7 +49,6 @@ int main()
 	// window.print_centered(text);
 	// window.print("ELO", 0, 0);
 	// window.circle(10);
-	getch();
 
 	return 0;
 }

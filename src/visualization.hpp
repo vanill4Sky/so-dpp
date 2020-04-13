@@ -40,7 +40,7 @@ public:
     void update_progressbar(size_t id, float value);
 
 private:
-    visualization() {};
+    visualization();
 
     void update_table(const size_t id);
     void draw_table(const size_t r, const utils::vec2<int> s) const;
@@ -53,7 +53,10 @@ private:
     const size_t progressbar_length = 15;
 
     std::mutex mutex_terminal;
-    const curses_wrapper window;
+    const curses_wrapper cw;
+    const dpp::window& main_window;
+    const dpp::window info_window;
+    //const dpp::window table_window;
     std::vector<dpp::philosopher_info> philosopher_infos;
 };
 

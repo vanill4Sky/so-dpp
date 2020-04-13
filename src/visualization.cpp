@@ -2,6 +2,11 @@
 
 #include <algorithm>
 
+dpp::visualization::visualization()
+    : main_window{ cw.get_main_window() }
+    , info_window{ cw.make_window({0, 0}, {0, 0}) }
+{}
+
 dpp::visualization& dpp::visualization::getInstance()
 {
     static dpp::visualization instance;
@@ -43,12 +48,13 @@ void dpp::visualization::update_info(size_t id, dpp::philosopher_state new_state
     {
         info += std::string(progressbar_horizontal_offset - info.size(), ' ');
     }
+    
     std::scoped_lock term_lock{ this->mutex_terminal };
     const auto fg_color{ choose_foreground_color(philosopher_infos[id].state) };
-    const auto c{ window.set_scoped_color(fg_color, COLOR_BLACK) };
-    window.print(info, info_vertical_offset + id, 0);
+    const auto ci{ info_window.set_scoped_color(fg_color, COLOR_BLACK) };
+    info_window.print(info, id, 0);
     update_table(id);
-    window.update();
+    info_window.update();
 }
 
 void dpp::visualization::update_table(const size_t id)
@@ -57,7 +63,7 @@ void dpp::visualization::update_table(const size_t id)
 
     const auto table_horizontal_offset{ 
         progressbar_horizontal_offset + progressbar_length };
-    const auto win_size{ window.get_size() };
+    const auto win_size{ main_window.get_size() };
     const utils::vec2<int> s( 
         win_size.x / 2 + table_horizontal_offset / 2, 
         r + info_vertical_offset / 2);
@@ -87,7 +93,7 @@ void dpp::visualization::draw_slice(size_t id, const size_t r, const utils::vec2
                 {
                     std::string sym{ "0" };
                     sym[0] += id;
-                    window.print(sym, row, col);
+                    info_window.print(sym, row, col);
                 }                
             }
         }
@@ -126,8 +132,8 @@ void dpp::visualization::update_progressbar(size_t id, float value)
         + "]"};
 
     std::scoped_lock term_lock{ this->mutex_terminal };
-    window.print(progressbar,
-        info_vertical_offset + id,
+    info_window.print(progressbar,
+        id,
         progressbar_horizontal_offset);
-    window.update();
+    info_window.update();
 }

@@ -14,6 +14,7 @@ add_executable(so-dpp src/main.cpp
                src/table.hpp src/table.cpp
                src/fork.hpp
                src/curses_wrapper.hpp src/curses_wrapper.cpp
+               src/window.hpp src/window.cpp
                src/utils.hpp
                src/visualization.hpp src/visualization.cpp )
 
