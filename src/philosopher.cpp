@@ -37,7 +37,7 @@ void dpp::philosopher::dine()
 
 void dpp::philosopher::think()
 {
-    visualization.update_info(id, dpp::philosopher_state::thinking);
+    visualization.update_info(id, dpp::philosopher_state::thinking, dinners_count);
 
     static thread_local std::uniform_int_distribution dist{ 1, 20 };
     const auto sleep_period{ dist(rng) };
@@ -53,7 +53,7 @@ void dpp::philosopher::eat()
 {
     std::scoped_lock forks_lock{ left_fork.mutex, right_fork.mutex };
 
-    visualization.update_info(id, dpp::philosopher_state::eating);
+    visualization.update_info(id, dpp::philosopher_state::eating, dinners_count);
 
     static thread_local std::uniform_int_distribution dist{ 1, 20 };
     const auto sleep_period{ dist(rng) };
