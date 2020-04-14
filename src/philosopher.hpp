@@ -37,6 +37,7 @@ private:
     std::thread thread;
     std::default_random_engine rng;
     dpp::visualization& visualization;
+    size_t dinners_count;
 };
 
 }

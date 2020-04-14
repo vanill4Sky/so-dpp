@@ -37,7 +37,10 @@ public:
 
     void add_philosopher(size_t id, std::string name);
     void update_info(size_t id, dpp::philosopher_state new_state);
+    void update_info(size_t id, dpp::philosopher_state new_state, size_t dinners_count);
     void update_progressbar(size_t id, float value);
+
+    void halt(){ info_window.stop(); }
 
 private:
     visualization();
@@ -46,16 +49,20 @@ private:
     void draw_table(const size_t r, const utils::vec2<int> s) const;
     void draw_slice(size_t id, const size_t r, const utils::vec2<int> s) const;
     unsigned int choose_foreground_color(dpp::philosopher_state state) const;
+    std::string choose_state_description(dpp::philosopher_state state) const;
 
 private:
+    std::string make_progressbar(const size_t length, const float value);
+
     const size_t info_vertical_offset = 2;
-    const size_t progressbar_horizontal_offset = 25;
+    const size_t label_length = 22;
     const size_t progressbar_length = 15;
 
     std::mutex mutex_terminal;
     const curses_wrapper cw;
     const dpp::window& main_window;
     const dpp::window info_window;
+    const dpp::window table_window;
     //const dpp::window table_window;
     std::vector<dpp::philosopher_info> philosopher_infos;
 };

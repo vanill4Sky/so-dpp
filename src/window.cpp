@@ -1,5 +1,6 @@
 #include "window.hpp"
 
+#include <cassert>
 #include <utility>
 #include <ncurses.h>
 
@@ -47,6 +48,7 @@ dpp::window::~window()
 dpp::window& dpp::window::operator=(dpp::window&& other)
 {
     win_ptr = std::exchange(other.win_ptr, nullptr);
+    return *this;
 }
 
 void dpp::window::update() const
@@ -59,15 +61,30 @@ void dpp::window::stop() const
     wgetch(win_ptr);
 }
 
-void dpp::window::print(std::string_view text, int row, int col) const
+void dpp::window::print(std::string_view text, size_t row, size_t col, size_t padding) const
 {
-    constexpr int padding{ 1 };
     mvwprintw(win_ptr, row + padding, col + padding, "%s" ,text.data());
 }
 
-utils::vec2<int> dpp::window::get_size() const
+void dpp::window::print_centered(std::string_view text, size_t row, size_t padding) const
 {
-    return { win_ptr->_maxx, win_ptr->_maxy };
+    assert(row < get_size().y);
+    assert(get_size().x >= text.size());
+
+    auto col{ static_cast<size_t>((get_size().x -  text.size()) / 2) };
+    print(text, row, col, padding);
+}
+
+void dpp::window::print_title(std::string_view text) const
+{
+    print_centered(text, 0, 0);
+}
+
+utils::vec2<size_t> dpp::window::get_size() const
+{
+    return { 
+        static_cast<size_t>(win_ptr->_maxx), 
+        static_cast<size_t>(win_ptr->_maxy) };
 }
 
 void dpp::window::set_color(unsigned int fg, unsigned int bg) const

@@ -33,9 +33,11 @@ public:
     void update() const;
     void stop() const;
 
-    void print(std::string_view text, int pos_x, int pos_y) const;
+    void print(std::string_view text, size_t row, size_t col, size_t padding = 1) const;
+    void print_centered(std::string_view text, size_t row, size_t padding = 1) const;
+    void print_title(std::string_view text) const;
 
-    utils::vec2<int> get_size() const;
+    utils::vec2<size_t> get_size() const;
     void set_color(unsigned int fg, unsigned int bg) const;
     void unset_color(unsigned int fg, unsigned int bg) const;
     dpp::scoped_color set_scoped_color(unsigned int fg, unsigned int bg) const;

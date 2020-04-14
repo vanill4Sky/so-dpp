@@ -34,7 +34,7 @@ void dine(T philospher_names_list)
 	std::this_thread::sleep_for(std::chrono::seconds(10));
 	table.ready = false;
 
-	getch();
+	visualization.halt();
 }
 
 int main()

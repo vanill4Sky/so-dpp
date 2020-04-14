@@ -4,6 +4,10 @@ project(so-dpp LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 
+set(CMAKE_CXX_FLAGS "-Wall -Wextra")
+set(CMAKE_CXX_FLAGS_DEBUG "-g")
+set(CMAKE_CXX_FLAGS_RELEASE "-O3")
+
 find_package(Curses REQUIRED)
 find_package(Threads REQUIRED)
 

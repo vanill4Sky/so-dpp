@@ -16,6 +16,7 @@ dpp::philosopher::philosopher(size_t id, std::string name, const dpp::table& tab
     , thread{ &dpp::philosopher::dine, this }
     , rng{ std::random_device{}() }
     , visualization{ visualization }
+    , dinners_count{ 0 }
     {}
 
 dpp::philosopher::~philosopher()
@@ -40,7 +41,7 @@ void dpp::philosopher::think()
 
     static thread_local std::uniform_int_distribution dist{ 1, 20 };
     const auto sleep_period{ dist(rng) };
-    for (size_t i = 0; i < sleep_period; ++i)
+    for (int i = 0; i < sleep_period; ++i)
     {
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
         visualization.update_progressbar(id, static_cast<float>(i) / sleep_period);
@@ -56,12 +57,14 @@ void dpp::philosopher::eat()
 
     static thread_local std::uniform_int_distribution dist{ 1, 20 };
     const auto sleep_period{ dist(rng) };
-    for (size_t i = 0; i < sleep_period; ++i)
+    for (int i = 0; i < sleep_period; ++i)
     {
         std::this_thread::sleep_for(std::chrono::milliseconds(50));
         visualization.update_progressbar(id, static_cast<float>(i) / sleep_period);
     }
     visualization.update_progressbar(id, 1.0f);
+    
+    ++dinners_count;
 
-    visualization.update_info(id, dpp::philosopher_state::finish);
+    visualization.update_info(id, dpp::philosopher_state::finish, dinners_count);
 }
