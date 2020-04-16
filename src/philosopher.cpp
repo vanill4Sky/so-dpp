@@ -4,7 +4,7 @@
 #include <chrono>
 #include <iostream>
 
-std::mutex g_lockprint;
+std::mutex mutex_waiter;
 
 dpp::philosopher::philosopher(size_t id, std::string name, const dpp::table& table, 
     dpp::fork& left_fork, dpp::fork& right_fork, 
@@ -55,7 +55,9 @@ void dpp::philosopher::think()
 
 void dpp::philosopher::eat()
 {
-    std::scoped_lock forks_lock{ left_fork.mutex, right_fork.mutex };
+    std::unique_lock lock_waiter{ mutex_waiter };
+    std::scoped_lock forks_lock{ right_fork.mutex, left_fork.mutex };
+    lock_waiter.unlock();
 
     visualization.update_info(id, dpp::philosopher_state::eating, dinners_count);
 
