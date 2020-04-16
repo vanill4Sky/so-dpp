@@ -15,7 +15,8 @@ class philosopher
 {
 public:
     philosopher(size_t id, std::string name, const dpp::table& table, 
-        dpp::fork& left_fork, dpp::fork& right_fork, 
+        dpp::fork& left_fork, dpp::fork& right_fork,
+        int thinking_duration, int eating_duration,
         dpp::visualization& visualization);
     philosopher(const philosopher&) = delete;
     philosopher(philosopher&&) = default;
@@ -38,6 +39,8 @@ private:
     std::default_random_engine rng;
     dpp::visualization& visualization;
     size_t dinners_count;
+    int thinking_duration;
+    int eating_duration;
 };
 
 }

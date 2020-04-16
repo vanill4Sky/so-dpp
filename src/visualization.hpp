@@ -55,11 +55,12 @@ private:
     unsigned int choose_foreground_color(dpp::philosopher_state state) const;
     std::string choose_state_description(dpp::philosopher_state state) const;
     std::string make_progressbar(const size_t length, const float value);
+    std::string make_philosopher_symbol(size_t id) const;
 
 private:
     const size_t info_vo = 2; // info vertical offset
     const size_t table_vo = 2; // table vertical offset
-    const size_t label_length = 21;
+    const size_t label_length = 25;
     const size_t progressbar_length = 15;
 
     std::mutex mutex_terminal;

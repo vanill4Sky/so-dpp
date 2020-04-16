@@ -15,7 +15,7 @@ dpp::visualization::visualization()
     info_window.print_title("Info");
     print_info_header();
     
-    table_window.print_title("Table state");
+    table_window.print_title("Table");
     print_table_header();
 }
 
@@ -98,7 +98,7 @@ void dpp::visualization::update_dinners_count(const size_t id, size_t dinners_co
 
 void dpp::visualization::update_table(const size_t id)
 {
-    const auto r{ std::max( static_cast<int>(philosopher_infos.size()), 5 ) };
+    const auto r{ std::max( static_cast<int>(philosopher_infos.size() * 0.66), 7 ) };
 
     const auto win_size{ table_window.get_size() };
     const utils::vec2<int> s( win_size.x / 2, r + table_vo );
@@ -129,9 +129,7 @@ void dpp::visualization::draw_slice(size_t id, const size_t r, const utils::vec2
 
                 if (phi >= slice * id && phi <= slice * (id + 1))
                 {
-                    std::string sym{ "0" };
-                    sym[0] += id;
-                    table_window.print(sym, row, col);
+                    table_window.print(make_philosopher_symbol(id), row, col);
                 }                
             }
         }
@@ -199,6 +197,33 @@ std::string dpp::visualization::make_progressbar(const size_t length, const floa
         std::string(inner_length - progress, ' ') + "]"};
 
     return progressbar;
+}
+
+std::string dpp::visualization::make_philosopher_symbol(size_t id) const
+{
+    constexpr size_t digits{ 9 };
+    constexpr size_t small_alpha{ ('z' - 'a') + digits + 1};
+    constexpr size_t capital_alpha{ ('Z' - 'A') + small_alpha + 1 };
+
+    std::string symbol{ "0" };
+    if (id <= digits)
+    {
+        symbol[0] = '0' + id;
+    }
+    else if (id <= small_alpha)
+    {
+        symbol[0] = 'a' + (id - digits - 1);
+    }
+    else if (id <= capital_alpha)
+    {
+        symbol[0] = 'A' + (id - small_alpha - 1);
+    }
+    else
+    {
+        symbol[0] = '?';
+    }
+    
+    return symbol;
 }
 
 void dpp::visualization::update_progressbar(size_t id, float value)

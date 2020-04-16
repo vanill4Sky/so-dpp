@@ -2,6 +2,7 @@
 #include <ncurses.h>
 #include <thread>
 #include <array>
+#include <stdexcept>
 
 #include "fork.hpp"
 #include "table.hpp"
@@ -9,7 +10,8 @@
 #include "visualization.hpp"
 
 template <typename T>
-void dine(T philospher_names_list)
+void dine(T philospher_names_list, int eating_duration, 
+	int thinking_duration, int simulation_duration)
 {
 	dpp::table table(philospher_names_list.size());
 	auto& visualization = dpp::visualization::getInstance();
@@ -24,6 +26,8 @@ void dine(T philospher_names_list)
 			table, 
 			table.forks[i], 
 			table.forks[(i + 1) % philospher_names_list.size()],
+			thinking_duration,
+			eating_duration,
 			visualization);
 		visualization.add_philosopher(
 			i,
@@ -31,24 +35,71 @@ void dine(T philospher_names_list)
 	}
 
 	table.ready = true;
-	std::this_thread::sleep_for(std::chrono::seconds(10));
+	std::this_thread::sleep_for(std::chrono::seconds(simulation_duration));
 	table.ready = false;
 
 	visualization.halt();
 }
 
-int main()
+std::vector<std::string> philosophers_names(size_t N)
 {
-	std::array names = {
-		 "filozof_0", "filozof_1", "filozof_2", "filozof_3", "filozof_4", 
-		 "filozof_5", "filozof_6", "filozof_7", "filozof_8", "filozof_9" };
-	dine(names);
+	std::vector<std::string> names;
 
-	// auto window = dpp::curses_wrapper();
-	// auto text = {"XD", "XDDD", "XDDDDDDDDDDDD"};
-	// window.print_centered(text);
-	// window.print("ELO", 0, 0);
-	// window.circle(10);
+	for(size_t i = 0; i < N; ++i)
+	{
+		names.emplace_back("philosopher_" + std::to_string(i));
+	}
+
+	return names;
+}
+
+int main(int argc, char* argv[])
+{
+	int philospohers_count{ 10 };
+	int eating_duration{ 50 };
+	int thinking_duration{ 100 };
+	int simulation_duration{ 10 };
+
+	for (int i = 1; i < argc; ++i)
+	{
+		std::string_view arg{ argv[i] };
+
+		if(i + 1 >= argc)
+		{
+			break;
+		}
+
+		int arg_value;
+		try 
+		{
+			arg_value = std::stoi(argv[++i]);
+		}
+		catch(const std::invalid_argument& e)
+		{
+			std::cerr << e.what() << '\n';
+			break;
+		}
+
+		if (arg == "-pc")
+		{
+			philospohers_count = arg_value;
+		}
+		else if (arg == "-ed")
+		{
+			eating_duration = arg_value;
+		}
+		else if (arg == "-td")
+		{
+			thinking_duration = arg_value;
+		}
+		else if (arg == "-sd")
+		{
+			simulation_duration = arg_value;
+		}
+	}
+
+	auto names = philosophers_names(philospohers_count);
+	dine(names, eating_duration, thinking_duration, simulation_duration);
 
 	return 0;
 }
