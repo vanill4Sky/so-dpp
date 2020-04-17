@@ -77,7 +77,7 @@ int main(int argc, char* argv[])
 		catch(const std::invalid_argument& e)
 		{
 			std::cerr << e.what() << '\n';
-			break;
+			return 1;
 		}
 
 		if (arg == "-pc")
