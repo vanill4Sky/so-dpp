@@ -1,5 +1,0 @@
-#!/usr/bin/env bash 
-
-cmake build
-make -C ./build/
-./build/so-dpp
