@@ -19,7 +19,7 @@ dpp::curses_wrapper::~curses_wrapper()
     endwin();				
 }
 
-const dpp::window& dpp::curses_wrapper::get_main_window() const
+dpp::window& dpp::curses_wrapper::get_main_window()
 {
     return main_window;
 }

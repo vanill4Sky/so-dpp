@@ -58,17 +58,16 @@ private:
     std::string make_philosopher_symbol(size_t id) const;
 
 private:
-    const size_t info_vo = 2; // info vertical offset
-    const size_t table_vo = 2; // table vertical offset
-    const size_t label_length = 25;
-    const size_t progressbar_length = 15;
+    size_t info_vo = 2; // info vertical offset
+    size_t table_vo = 2; // table vertical offset
+    size_t label_length = 25;
+    size_t progressbar_length = 15;
 
     std::mutex mutex_terminal;
-    const curses_wrapper cw;
-    const dpp::window& main_window;
-    const dpp::window info_window;
-    const dpp::window table_window;
-    //const dpp::window table_window;
+    curses_wrapper cw;
+    dpp::window& main_window;
+    dpp::window info_window;
+    dpp::window table_window;
     std::vector<dpp::philosopher_info> philosopher_infos;
 };
 

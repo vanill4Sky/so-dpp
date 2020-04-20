@@ -56,8 +56,8 @@ std::vector<std::string> philosophers_names(size_t N)
 int main(int argc, char* argv[])
 {
 	int philospohers_count{ 10 };
-	int eating_duration{ 50 };
-	int thinking_duration{ 100 };
+	int eating_duration{ 25 };
+	int thinking_duration{ 50 };
 	int simulation_duration{ 10 };
 
 	for (int i = 1; i < argc; ++i)

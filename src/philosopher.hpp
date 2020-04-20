@@ -30,8 +30,8 @@ public:
     void think();
 
 private:
-    const size_t id;
-    const std::string name;
+    size_t id;
+    std::string name;
     const dpp::table& table;
     dpp::fork& left_fork;
     dpp::fork& right_fork;
